@@ -8,7 +8,7 @@
     h1 { font-size: 22px; }
     .card { background: #f7f7f8; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
     label { display: block; font-weight: 600; margin-top: 12px; margin-bottom: 4px; font-size: 14px; }
-    input[type=text] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+    input[type=text], select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; background: white; }
     .hint { color: #666; font-size: 12px; margin-top: 2px; }
     .pairing-code { font-size: 28px; font-weight: 700; letter-spacing: 4px; color: #b3271f; }
     button { background: #b3271f; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-size: 14px; cursor: pointer; margin-top: 16px; }
@@ -32,8 +32,20 @@
 
   <form method="post" action="/settings">
     <div class="card">
+      <label>Quick setup</label>
+      <select id="preset-select" onchange="applyPreset(this.value)">
+        <option value="">Choose your DAW…</option>
+        {% for key, preset in presets.items() %}
+        <option value="{{ key }}">{{ preset.label }}</option>
+        {% endfor %}
+        <option value="__custom__">Other / I'll enter my own shortcuts</option>
+      </select>
+      <div class="hint">Picks known-good defaults for the fields below — you can still edit anything afterward.</div>
+    </div>
+
+    <div class="card">
       <label>Your DAW's window title (partial match)</label>
-      <input type="text" name="window_title_hint" value="{{ config.window_title_hint }}" placeholder="e.g. studio, ableton, pro tools">
+      <input type="text" id="window_title_hint" name="window_title_hint" value="{{ config.window_title_hint }}" placeholder="e.g. studio, ableton, pro tools">
       <div class="hint">The app brings this window to the front before sending each keystroke.</div>
     </div>
 
@@ -41,27 +53,29 @@
       <div class="row">
         <div style="flex:1">
           <label>Record shortcut</label>
-          <input type="text" name="key_record" value="{{ config.key_record|join(',') }}" placeholder="e.g. ctrl,r">
+          <input type="text" id="key_record" name="key_record" value="{{ config.key_record|join(',') }}" placeholder="e.g. ctrl,r">
         </div>
         <button type="button" class="test" onclick="testKey('record')">Test</button>
       </div>
       <div class="row">
         <div style="flex:1">
           <label>Play shortcut</label>
-          <input type="text" name="key_play" value="{{ config.key_play|join(',') }}" placeholder="e.g. space">
+          <input type="text" id="key_play" name="key_play" value="{{ config.key_play|join(',') }}" placeholder="e.g. space">
         </div>
         <button type="button" class="test" onclick="testKey('play')">Test</button>
       </div>
       <div class="row">
         <div style="flex:1">
           <label>Stop shortcut</label>
-          <input type="text" name="key_stop" value="{{ config.key_stop|join(',') }}" placeholder="e.g. num0">
+          <input type="text" id="key_stop" name="key_stop" value="{{ config.key_stop|join(',') }}" placeholder="e.g. num0">
         </div>
         <button type="button" class="test" onclick="testKey('stop')">Test</button>
       </div>
       <div class="hint">
         Comma-separate combo keys (e.g. <code>ctrl,r</code> for Ctrl+R). Single keys: <code>space</code>, <code>enter</code>, <code>num0</code> (numpad 0), <code>multiply</code> (numpad *).
         Click Test with your DAW open to check a shortcut immediately.
+        <br><br>
+        Most DAWs use one key to both start and stop playback. If your preset shows the same shortcut for Play and Stop, that's expected — tapping it starts playback, tapping it again stops. It works fine in normal use (tap Stop right after Play), but tapping Stop when nothing is playing will start playback instead.
       </div>
     </div>
 
@@ -72,6 +86,18 @@
   <script>
     function testKey(action) {
       fetch('/' + action + '?token={{ config.token }}');
+    }
+
+    const PRESETS = {{ presets|tojson }};
+
+    function applyPreset(key) {
+      if (!key || key === '__custom__') return;
+      const preset = PRESETS[key];
+      if (!preset) return;
+      document.getElementById('window_title_hint').value = preset.window_title_hint;
+      document.getElementById('key_record').value = preset.key_record.join(',');
+      document.getElementById('key_play').value = preset.key_play.join(',');
+      document.getElementById('key_stop').value = preset.key_stop.join(',');
     }
   </script>
 </body>

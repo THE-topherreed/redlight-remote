@@ -20,6 +20,7 @@ import pystray
 
 import config_store
 import mdns_advertise
+from daw_presets import PRESETS
 
 PORT = 5005
 
@@ -89,7 +90,7 @@ def route_ping():
 
 @app.route("/", methods=["GET"])
 def route_settings():
-    return render_template("settings.html", config=config, saved=False)
+    return render_template("settings.html", config=config, saved=False, presets=PRESETS)
 
 
 @app.route("/settings", methods=["POST"])
@@ -99,7 +100,7 @@ def route_save_settings():
     config["key_play"] = [k.strip() for k in request.form.get("key_play", "").split(",") if k.strip()]
     config["key_stop"] = [k.strip() for k in request.form.get("key_stop", "").split(",") if k.strip()]
     config_store.save_config(config)
-    return render_template("settings.html", config=config, saved=True)
+    return render_template("settings.html", config=config, saved=True, presets=PRESETS)
 
 
 @app.route("/regenerate-token", methods=["POST"])
@@ -113,7 +114,7 @@ def run_flask():
 
 
 def make_tray_icon():
-    img = Image.new("RGB", (64, 64), "#0a7d3c")
+    img = Image.new("RGB", (64, 64), "#b3271f")
     draw = ImageDraw.Draw(img)
     draw.ellipse((16, 16, 48, 48), fill="white")
     return img
