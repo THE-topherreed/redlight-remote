@@ -5,6 +5,7 @@
 #define USER_SETUP_ID 300
 
 #define ILI9341_2_DRIVER
+#define TFT_INVERSION_ON
 
 #define TFT_WIDTH  240
 #define TFT_HEIGHT 320

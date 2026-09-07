@@ -75,7 +75,7 @@ struct Button {
 Button buttons[] = {
   { "RECORD", 20,  40, 200, 70, TFT_RED,   "/record" },
   { "PLAY",   20, 130, 200, 70, TFT_GREEN, "/play"   },
-  { "STOP",   20, 220, 200, 70, TFT_ORANGE,"/stop"   },
+  { "STOP",   20, 220, 200, 70, TFT_BLUE,  "/stop"   },
 };
 const int NUM_BUTTONS = sizeof(buttons) / sizeof(buttons[0]);
 
@@ -169,7 +169,7 @@ void drawButtons() {
     Button& b = buttons[i];
     tft.fillRoundRect(b.x, b.y, b.w, b.h, 10, b.color);
     tft.drawRoundRect(b.x, b.y, b.w, b.h, 10, TFT_WHITE);
-    tft.setTextColor(TFT_BLACK, b.color);
+    tft.setTextColor(TFT_WHITE, b.color);
     tft.setTextSize(3);
     int textW = strlen(b.label) * 18;
     tft.setCursor(b.x + (b.w - textW) / 2, b.y + b.h / 2 - 12);
@@ -187,7 +187,7 @@ void flashButton(int index) {
   delay(120);
   tft.fillRoundRect(b.x, b.y, b.w, b.h, 10, b.color);
   tft.drawRoundRect(b.x, b.y, b.w, b.h, 10, TFT_WHITE);
-  tft.setTextColor(TFT_BLACK, b.color);
+  tft.setTextColor(TFT_WHITE, b.color);
   tft.setTextSize(3);
   int textW = strlen(b.label) * 18;
   tft.setCursor(b.x + (b.w - textW) / 2, b.y + b.h / 2 - 12);
