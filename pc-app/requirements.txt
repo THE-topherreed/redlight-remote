@@ -1,0 +1,6 @@
+flask
+pyautogui
+pygetwindow
+pillow
+pystray
+zeroconf

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RedLight - Install Firmware</title>
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+  <style>
+    body {
+      font-family: -apple-system, Segoe UI, Arial, sans-serif;
+      max-width: 640px;
+      margin: 60px auto;
+      padding: 0 20px;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+    h1 { font-size: 26px; }
+    .step {
+      background: #f7f7f8;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+    }
+    .step b { display: block; margin-bottom: 4px; }
+    .browser-warning {
+      background: #fff4e5;
+      border: 1px solid #f0c674;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    esp-web-install-button {
+      display: block;
+      margin: 24px 0;
+    }
+    esp-web-install-button button {
+      font-size: 16px;
+      padding: 14px 28px;
+      background: #b3271f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Install RedLight Firmware</h1>
+
+  <div class="browser-warning">
+    This installer only works in <b>Google Chrome</b> or <b>Microsoft Edge</b> on a computer
+    (not a phone or tablet) - it uses your browser's USB connection to talk to the board.
+  </div>
+
+  <div class="step">
+    <b>Step 1</b>
+    Connect your CYD touchscreen board to this computer with a USB cable.
+  </div>
+  <div class="step">
+    <b>Step 2</b>
+    Click the button below, then choose the board's port when your browser asks.
+  </div>
+  <div class="step">
+    <b>Step 3</b>
+    Click "Install" and wait for the progress bar to finish (about a minute).
+  </div>
+
+  <esp-web-install-button manifest="manifest.json">
+    <button slot="activate">Connect and Install</button>
+    <span slot="unsupported">Sorry, your browser doesn't support this. Please use Chrome or Edge on a desktop/laptop computer.</span>
+    <span slot="not-allowed">This page must be served over HTTPS to install firmware.</span>
+  </esp-web-install-button>
+
+  <p>
+    Once installed, the board will power on and show a "Connect to WiFi: RedLight-Setup" screen.
+    Follow the printed setup guide from there.
+  </p>
+</body>
+</html>
