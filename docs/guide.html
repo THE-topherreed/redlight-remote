@@ -1,0 +1,425 @@
+<title>RedLight Setup</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root {
+    --bg: #f6f3ee;
+    --surface: #ffffff;
+    --surface-sunken: #eeeae2;
+    --text: #211d19;
+    --text-muted: #6f6659;
+    --border: #e3ddd2;
+    --accent: #b3271f;
+    --accent-soft: #f6e2df;
+    --accent-ink: #ffffff;
+    --step-number: #d8cdbb;
+    --code-bg: #211d19;
+    --code-text: #f1ece3;
+    --shadow: 0 1px 2px rgba(33,29,25,0.06), 0 8px 24px -12px rgba(33,29,25,0.15);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1a1714;
+      --surface: #242019;
+      --surface-sunken: #1f1c17;
+      --text: #f1ece3;
+      --text-muted: #a89d8c;
+      --border: #3a342b;
+      --accent: #e2564c;
+      --accent-soft: #3a221f;
+      --accent-ink: #1a1714;
+      --step-number: #4a4234;
+      --code-bg: #0f0d0b;
+      --code-text: #f1ece3;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1a1714;
+    --surface: #242019;
+    --surface-sunken: #1f1c17;
+    --text: #f1ece3;
+    --text-muted: #a89d8c;
+    --border: #3a342b;
+    --accent: #e2564c;
+    --accent-soft: #3a221f;
+    --accent-ink: #1a1714;
+    --step-number: #4a4234;
+    --code-bg: #0f0d0b;
+    --code-text: #f1ece3;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', -apple-system, Segoe UI, sans-serif;
+    margin: 0;
+    padding: 0 20px 80px;
+  }
+  .wrap { max-width: 700px; margin: 0 auto; }
+
+  header {
+    padding: 56px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 800;
+    font-size: clamp(30px, 5vw, 42px);
+    line-height: 1.08;
+    margin: 0 0 14px;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 54ch;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .contents {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 48px;
+    box-shadow: var(--shadow);
+  }
+  .contents-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .contents ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 20px;
+  }
+  .contents a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .contents a:hover { color: var(--accent); }
+  .contents .n {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--accent);
+    margin-right: 6px;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 20px;
+    margin-bottom: 8px;
+    scroll-margin-top: 20px;
+  }
+  .step-number {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--step-number);
+    line-height: 1;
+    padding-top: 4px;
+  }
+  .step-rail {
+    grid-column: 1;
+    display: flex;
+    justify-content: center;
+  }
+  .step-rail-line {
+    width: 2px;
+    background: var(--border);
+    margin-top: 8px;
+  }
+  .step-body {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 26px 26px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+  }
+  .step-body h2 {
+    font-family: 'Archivo', sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    margin: 0 0 10px;
+    letter-spacing: -0.005em;
+  }
+  .step-body p { line-height: 1.6; margin: 0 0 12px; color: var(--text); }
+  .step-body p:last-child { margin-bottom: 0; }
+  .step-body .sub { color: var(--text-muted); font-size: 14.5px; }
+
+  .callout {
+    background: var(--surface-sunken);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 14px;
+    border-left: 3px solid var(--accent);
+  }
+  .callout b { color: var(--text); }
+
+  code, .kbd, .field {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.92em;
+  }
+  .kbd {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-weight: 500;
+  }
+  .field {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-weight: 600;
+  }
+
+  .pairing-demo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--code-bg);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+  .pairing-demo .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #a89d8c;
+  }
+  .pairing-demo .code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--code-text);
+  }
+
+  .button-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0 4px;
+    max-width: 200px;
+  }
+  .button-diagram .btn {
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    color: white;
+  }
+  .btn.record { background: #b3271f; }
+  .btn.play { background: #3f7d4a; }
+  .btn.stop { background: #c07a1e; }
+
+  .shortcut-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14.5px;
+  }
+  .shortcut-row:last-child { border-bottom: none; }
+  .shortcut-row .name { font-weight: 500; }
+
+  .flash-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 11px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-top: 14px;
+  }
+
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .spec-table tr { border-bottom: 1px solid var(--border); }
+  .spec-table tr:last-child { border-bottom: none; }
+  .spec-table td { padding: 9px 0; }
+  .spec-table td:first-child { color: var(--text-muted); width: 40%; }
+  .spec-table td:last-child { font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  @media (max-width: 520px) {
+    .step { grid-template-columns: 40px 1fr; gap: 12px; }
+    .step-number { font-size: 22px; }
+    .contents ol { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Setup Guide</div>
+    <h1>RedLight</h1>
+    <p class="lede">A touchscreen Record / Play / Stop control for your vocal booth, wired to your DAW over WiFi — no computer inside the booth required. Setup takes about ten minutes.</p>
+  </header>
+
+  <nav class="contents">
+    <div class="contents-title">On this page</div>
+    <ol>
+      <li><a href="#step-1"><span class="n">01</span>What's in the box</a></li>
+      <li><a href="#step-2"><span class="n">02</span>Install the desktop app</a></li>
+      <li><a href="#step-3"><span class="n">03</span>Power on the board</a></li>
+      <li><a href="#step-4"><span class="n">04</span>Connect it to your WiFi</a></li>
+      <li><a href="#step-5"><span class="n">05</span>Match your DAW's shortcuts</a></li>
+      <li><a href="#step-6"><span class="n">06</span>Mount it and record</a></li>
+      <li><a href="#troubleshooting"><span class="n">—</span>Troubleshooting</a></li>
+      <li><a href="#specs"><span class="n">—</span>Specifications</a></li>
+    </ol>
+  </nav>
+
+  <div class="step" id="step-1">
+    <div class="step-rail"><div class="step-number">01</div></div>
+    <div class="step-body">
+      <h2>What's in the box</h2>
+      <p>One touchscreen remote board and a USB cable. That's it — everything else runs on your existing studio computer and home WiFi.</p>
+      <p class="sub">You'll also need: a 2.4GHz WiFi network (see note below) and a USB power source near where you'll mount the board — a wall adapter, or a spare port on your interface or computer.</p>
+      <div class="callout"><b>2.4GHz WiFi only.</b> The board's radio doesn't support 5GHz networks. If your home WiFi name is the same on both bands, check your router for a separate 2.4GHz network name — most routers offer one.</div>
+    </div>
+  </div>
+
+  <div class="step" id="step-2">
+    <div class="step-rail"><div class="step-number">02</div></div>
+    <div class="step-body">
+      <h2>Install the desktop app</h2>
+      <p>On the computer running your DAW, install <span class="field">RedLightInstaller.exe</span>. It's a small app that lives quietly in your system tray and translates taps on the touchscreen into keystrokes inside your DAW.</p>
+      <p>The first time it runs, a Settings page opens automatically in your browser — no need to find anything. You'll see a 6-digit <b>Pairing Code</b>, which is how the touchscreen finds and authenticates with this specific computer.</p>
+      <p class="sub">To get back to Settings later, look for a small red dot icon near the clock in your taskbar — click the <b>^</b> arrow next to the clock first if you don't see it right away, since Windows sometimes tucks new icons away there.</p>
+      <div class="pairing-demo">
+        <span class="label">Pairing Code</span>
+        <span class="code">4 8 1 2 0 6</span>
+      </div>
+      <p class="sub">Keep this window open — you'll type this code into the touchscreen in Step 4.</p>
+    </div>
+  </div>
+
+  <div class="step" id="step-3">
+    <div class="step-rail"><div class="step-number">03</div></div>
+    <div class="step-body">
+      <h2>Power on the board</h2>
+      <p>Plug the board into a USB power source. The screen will show three buttons — <b>RECORD</b>, <b>PLAY</b>, <b>STOP</b> — if it was flashed before shipping.</p>
+      <div class="button-diagram">
+        <div class="btn record">RECORD</div>
+        <div class="btn play">PLAY</div>
+        <div class="btn stop">STOP</div>
+      </div>
+      <p class="sub">If instead you see a "Connect to WiFi: RedLight-Setup" message, the board needs its firmware installed first. Visit the link below on a laptop or desktop running Chrome or Edge, with the board connected by USB:</p>
+      <a class="flash-cta" href="./">Install Firmware →</a>
+    </div>
+  </div>
+
+  <div class="step" id="step-4">
+    <div class="step-rail"><div class="step-number">04</div></div>
+    <div class="step-body">
+      <h2>Connect it to your WiFi</h2>
+      <p>The first time it powers on, the board creates its own temporary WiFi network so it can ask you for your home network's details — no separate app or computer needed for this part.</p>
+      <p><b>On your phone or laptop:</b> connect to the WiFi network named <span class="field">RedLight-Setup</span>. A setup page should open automatically (if it doesn't, open a browser and go to <code>192.168.4.1</code>).</p>
+      <p>On that page, choose your home WiFi network, enter its password, and paste in the <b>Pairing Code</b> from Step 2. Tap Save — the board will restart and connect.</p>
+      <div class="callout">The board finds your computer automatically on the network once paired — there's no IP address to type in, and it'll keep finding it even if your router hands out a new address later.</div>
+    </div>
+  </div>
+
+  <div class="step" id="step-5">
+    <div class="step-rail"><div class="step-number">05</div></div>
+    <div class="step-body">
+      <h2>Match your DAW's shortcuts</h2>
+      <p>Back in the desktop app's settings page, tell it your DAW's window name and its keyboard shortcuts for Record, Play, and Stop. Most DAWs list these under a Keyboard Shortcuts or Key Commands menu.</p>
+      <div class="shortcut-row"><span class="name">Window title</span><span class="kbd">ableton</span></div>
+      <div class="shortcut-row"><span class="name">Record</span><span class="kbd">ctrl + r</span></div>
+      <div class="shortcut-row"><span class="name">Play</span><span class="kbd">space</span></div>
+      <div class="shortcut-row"><span class="name">Stop</span><span class="kbd">num0</span></div>
+      <p class="sub">Click <b>Test</b> next to each field with your DAW open to confirm it fires correctly before you leave the booth.</p>
+    </div>
+  </div>
+
+  <div class="step" id="step-6">
+    <div class="step-rail"></div>
+    <div class="step-body">
+      <h2>Mount it and record</h2>
+      <p>Fix the board somewhere visible and reachable in the booth — a mic stand clamp, a shelf, or adhesive mount all work. Keep the desktop app running (it starts automatically each time the studio computer turns on) and you're set: tap RECORD before you sing, STOP when you're done, PLAY to hear it back.</p>
+    </div>
+  </div>
+
+  <section id="troubleshooting">
+    <h2 style="font-family:'Archivo',sans-serif; font-size:22px; margin-bottom:16px;">Troubleshooting</h2>
+    <div class="step-body" style="margin-bottom:16px;">
+      <p><b>Screen says "Disconnected."</b> Confirm you're on a 2.4GHz network and that your router is powered on. If you recently changed WiFi passwords, hold your finger anywhere on the screen for 5 seconds while powering the board on — this clears the saved network and re-opens the <span class="field">RedLight-Setup</span> pairing flow from Step 4.</p>
+      <p><b>Buttons don't do anything in the DAW.</b> Make sure the desktop app is running (check the system tray) and that the DAW's window title in Settings actually matches part of its real window title. Use the Test buttons in Settings to isolate the problem.</p>
+      <p><b>Play and Stop do the same thing.</b> Some DAWs bind both to one toggle key. Check your DAW's key command list for separate dedicated Play/Stop shortcuts rather than a single transport-toggle key.</p>
+    </div>
+  </section>
+
+  <section id="specs">
+    <h2 style="font-family:'Archivo',sans-serif; font-size:22px; margin-bottom:16px;">Specifications</h2>
+    <div class="step-body">
+      <table class="spec-table">
+        <tr><td>Display</td><td>2.8" touchscreen, 240×320</td></tr>
+        <tr><td>Connectivity</td><td>WiFi 2.4GHz (802.11 b/g/n)</td></tr>
+        <tr><td>Power</td><td>USB, 5V</td></tr>
+        <tr><td>Desktop app</td><td>Windows 10/11</td></tr>
+        <tr><td>Range</td><td>Same local network as your studio computer</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <div class="callout" style="margin-top: 8px;">
+    <b>About this build.</b> RedLight is currently made in small batches and sold directly rather than through public retail. It hasn't yet gone through independent FCC/CE compliance testing as a finished product — happy to answer questions about this before you buy.
+  </div>
+
+  <footer>RedLight — Setup Guide</footer>
+
+</div>
