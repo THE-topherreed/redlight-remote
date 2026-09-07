@@ -8,6 +8,7 @@ shortcuts when the board's Record/Play/Stop buttons are tapped.
 """
 
 import os
+import socket
 import sys
 import threading
 import webbrowser
@@ -24,6 +25,28 @@ import mdns_advertise
 from daw_presets import PRESETS
 
 PORT = 5005
+
+# A fixed local port used purely as a single-instance lock (never served
+# on). Binding it is how we tell whether another copy of the app is
+# already running - a tray-only app gives no visual sign when a second
+# copy launches, so without this, every extra double-click on the
+# Desktop/Start Menu icon silently piles up another background process
+# and another duplicate tray icon.
+_INSTANCE_LOCK_PORT = 45177
+_instance_lock_socket = None
+
+
+def _acquire_single_instance_lock():
+    global _instance_lock_socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.bind(("127.0.0.1", _INSTANCE_LOCK_PORT))
+        s.listen(1)
+        _instance_lock_socket = s  # keep alive for the app's lifetime
+        return True
+    except OSError:
+        s.close()
+        return False
 
 # First run = no config file exists yet anywhere on this machine. Checked
 # before load_config() creates one, so this only ever fires once per
@@ -158,6 +181,11 @@ def quit_app(icon, item):
 
 
 def main():
+    if not _acquire_single_instance_lock():
+        # Already running - just show it instead of starting a duplicate.
+        webbrowser.open(f"http://localhost:{PORT}")
+        return
+
     threading.Thread(target=run_flask, daemon=True).start()
 
     if IS_FIRST_RUN:
