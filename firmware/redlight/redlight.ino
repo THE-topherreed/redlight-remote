@@ -72,12 +72,35 @@ struct Button {
   const char* endpoint;
 };
 
-Button buttons[] = {
-  { "RECORD", 20,  40, 200, 70, TFT_RED,   "/record" },
-  { "PLAY",   20, 130, 200, 70, TFT_GREEN, "/play"   },
-  { "STOP",   20, 220, 200, 70, TFT_BLUE,  "/stop"   },
-};
-const int NUM_BUTTONS = sizeof(buttons) / sizeof(buttons[0]);
+// Some DAWs (most of them - see daw_presets.py) use one toggle key for
+// both Play and Stop. For those, showing separate Play/Stop buttons is
+// misleading - tapping Stop when nothing is playing would start
+// playback instead. When the desktop app reports toggle mode, these
+// two buttons merge into one that flips between PLAY and STOP based on
+// what it last sent. DAWs with genuinely separate keys (Studio One)
+// keep the original three-button layout.
+Button buttons[3];
+int numButtons = 3;
+bool playStopToggle = false;
+bool isPlaying = false;
+
+void setupButtons() {
+  if (playStopToggle) {
+    numButtons = 2;
+    buttons[0] = { "RECORD", 20, 40, 200, 70, TFT_RED, "/record" };
+    buttons[1] = {
+      isPlaying ? "STOP" : "PLAY",
+      20, 130, 200, 160,
+      isPlaying ? TFT_BLUE : TFT_GREEN,
+      isPlaying ? "/stop" : "/play"
+    };
+  } else {
+    numButtons = 3;
+    buttons[0] = { "RECORD", 20,  40, 200, 70, TFT_RED,   "/record" };
+    buttons[1] = { "PLAY",   20, 130, 200, 70, TFT_GREEN, "/play"   };
+    buttons[2] = { "STOP",   20, 220, 200, 70, TFT_BLUE,  "/stop"   };
+  }
+}
 
 unsigned long lastTouchMs = 0;
 const unsigned long TOUCH_DEBOUNCE_MS = 400;
@@ -161,11 +184,31 @@ bool resolveServer() {
   return true;
 }
 
+// Asks the desktop app whether Play/Stop are one toggle key for the
+// buyer's configured DAW. Defaults to false (separate buttons, the
+// original/safe layout) if this can't be reached yet - it'll pick up
+// the real setting on the next boot once the desktop app is running.
+void fetchMode() {
+  if (WiFi.status() != WL_CONNECTED) return;
+  if (resolvedServerIP.length() == 0 && !resolveServer()) return;
+  lastMdnsLookup = millis();
+
+  HTTPClient http;
+  String url = "http://" + resolvedServerIP + ":" + String(SERVER_PORT) + "/mode?token=" + pairingToken;
+  http.begin(url);
+  int code = http.GET();
+  if (code == 200) {
+    String body = http.getString();
+    playStopToggle = body.indexOf("true") >= 0;
+  }
+  http.end();
+}
+
 // --- UI --------------------------------------------------------------------
 
 void drawButtons() {
   tft.fillScreen(TFT_BLACK);
-  for (int i = 0; i < NUM_BUTTONS; i++) {
+  for (int i = 0; i < numButtons; i++) {
     Button& b = buttons[i];
     tft.fillRoundRect(b.x, b.y, b.w, b.h, 10, b.color);
     tft.drawRoundRect(b.x, b.y, b.w, b.h, 10, TFT_WHITE);
@@ -231,6 +274,8 @@ void setup() {
     Serial.println("mDNS init failed");
   }
 
+  fetchMode();
+  setupButtons();
   drawButtons();
 }
 
@@ -242,11 +287,16 @@ void loop() {
     int x = map(p.x, TOUCH_MIN_X, TOUCH_MAX_X, 0, tft.width());
     int y = map(p.y, TOUCH_MIN_Y, TOUCH_MAX_Y, 0, tft.height());
 
-    for (int i = 0; i < NUM_BUTTONS; i++) {
+    for (int i = 0; i < numButtons; i++) {
       Button& b = buttons[i];
       if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) {
         flashButton(i);
         sendCommand(b.endpoint);
+        if (playStopToggle && i == 1) {
+          isPlaying = !isPlaying;
+          setupButtons();
+          drawButtons();
+        }
         lastTouchMs = millis();
         break;
       }

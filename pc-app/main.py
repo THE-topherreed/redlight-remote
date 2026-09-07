@@ -7,6 +7,7 @@ anyone typing an IP address, and simulates the buyer's own DAW keyboard
 shortcuts when the board's Record/Play/Stop buttons are tapped.
 """
 
+import os
 import sys
 import threading
 import webbrowser
@@ -23,6 +24,12 @@ import mdns_advertise
 from daw_presets import PRESETS
 
 PORT = 5005
+
+# First run = no config file exists yet anywhere on this machine. Checked
+# before load_config() creates one, so this only ever fires once per
+# install - a non-technical buyer shouldn't have to go hunting for a
+# taskbar icon just to see their pairing code for the first time.
+IS_FIRST_RUN = not os.path.exists(config_store.CONFIG_PATH) and not os.path.exists(config_store._OLD_CONFIG_PATH)
 
 config = config_store.load_config()
 app = Flask(__name__)
@@ -88,6 +95,13 @@ def route_ping():
     return "ok\n"
 
 
+@app.route("/mode")
+def route_mode():
+    check_auth()
+    toggle = config["key_play"] == config["key_stop"]
+    return {"play_stop_toggle": toggle}
+
+
 @app.route("/", methods=["GET"])
 def route_settings():
     return render_template("settings.html", config=config, saved=False, presets=PRESETS)
@@ -131,6 +145,9 @@ def quit_app(icon, item):
 
 def main():
     threading.Thread(target=run_flask, daemon=True).start()
+
+    if IS_FIRST_RUN:
+        threading.Timer(1.0, open_settings, args=(None, None)).start()
 
     zc, info = mdns_advertise.start_advertising(PORT)
 
