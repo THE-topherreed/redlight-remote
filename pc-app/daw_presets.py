@@ -44,14 +44,14 @@ PRESETS = {
         "key_stop": ["space"],
     },
     "pro_tools": {
-        "label": "Avid Pro Tools",
+        "label": "Pro Tools",
         "window_title_hint": "pro tools",
         "key_record": ["ctrl", "space"],
         "key_play": ["space"],
         "key_stop": ["space"],
     },
     "reaper": {
-        "label": "Cockos Reaper",
+        "label": "Reaper",
         "window_title_hint": "reaper",
         "key_record": ["ctrl", "r"],
         "key_play": ["space"],
