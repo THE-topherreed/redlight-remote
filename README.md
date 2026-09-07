@@ -30,6 +30,10 @@ python main.py
 ```
 Package a standalone Windows build with `build.bat` (PyInstaller), then compile `installer.iss` with Inno Setup for a distributable installer.
 
+## Availability
+
+RedLight is currently sold in small batches, direct to buyers, rather than through public retail. It has not yet gone through independent FCC/CE certification testing — the ESP32 module it's built on carries its own radio certification from Espressif when genuinely sourced, but the finished board hasn't been through the separate compliance testing that full retail sale would require. If that matters for your use case, ask before buying.
+
 ## License
 
 All rights reserved.
