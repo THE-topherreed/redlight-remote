@@ -58,6 +58,16 @@ config = config_store.load_config()
 app = Flask(__name__)
 
 
+@app.after_request
+def no_cache(response):
+    # The settings page changes (new presets, saved edits) but a browser
+    # tab left open for days will otherwise keep showing whatever it
+    # first loaded - this has caused real confusion (a preset that was
+    # clearly on the server not showing up client-side). Never cache.
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    return response
+
+
 def focus_daw():
     hint = config.get("window_title_hint", "").strip().lower()
     if not hint:
