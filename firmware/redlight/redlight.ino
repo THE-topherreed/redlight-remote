@@ -2,7 +2,8 @@
  * RedLight - product firmware
  *
  * Runs on a "CYD" (ESP32-2432S028R, ILI9341 2.8" + XPT2046 touch).
- * Draws RECORD / PLAY / STOP buttons and sends commands over WiFi to the
+ * Draws RECORD / PLAY / STOP buttons (plus an optional BEGINNING
+ * button some DAWs support) and sends commands over WiFi to the
  * companion desktop app (RedLight), which simulates whatever keyboard
  * shortcut the buyer's DAW uses.
  *
@@ -78,28 +79,69 @@ struct Button {
 // playback instead. When the desktop app reports toggle mode, these
 // two buttons merge into one that flips between PLAY and STOP based on
 // what it last sent. DAWs with genuinely separate keys (Studio One)
-// keep the original three-button layout.
-Button buttons[3];
+// keep the original three-button layout. A 4th button (BEGINNING - go
+// to start of project) shows up only when the desktop app reports a
+// shortcut is actually configured for it.
+Button buttons[4];
 int numButtons = 3;
 bool playStopToggle = false;
+bool hasBeginning = false;
 bool isPlaying = false;
 
-void setupButtons() {
-  if (playStopToggle) {
-    numButtons = 2;
-    buttons[0] = { "RECORD", 20, 40, 200, 70, TFT_RED, "/record" };
-    buttons[1] = {
-      isPlaying ? "STOP" : "PLAY",
-      20, 130, 200, 160,
-      isPlaying ? TFT_BLUE : TFT_GREEN,
-      isPlaying ? "/stop" : "/play"
-    };
-  } else {
-    numButtons = 3;
-    buttons[0] = { "RECORD", 20,  40, 200, 70, TFT_RED,   "/record" };
-    buttons[1] = { "PLAY",   20, 130, 200, 70, TFT_GREEN, "/play"   };
-    buttons[2] = { "STOP",   20, 220, 200, 70, TFT_BLUE,  "/stop"   };
+const int BTN_X = 20;
+const int BTN_W = 200;
+const int BTN_TOP = 40;
+const int BTN_BOTTOM = 290;
+const int BTN_GAP = 10;
+
+// Distributes however many buttons are needed evenly across the fixed
+// vertical space below the logo/status area, so adding or removing a
+// button (toggle merge, optional Beginning) never needs new hardcoded
+// coordinates.
+void layoutButtons(int count) {
+  int h = (BTN_BOTTOM - BTN_TOP - BTN_GAP * (count - 1)) / count;
+  int y = BTN_TOP;
+  for (int i = 0; i < count; i++) {
+    buttons[i].x = BTN_X;
+    buttons[i].y = y;
+    buttons[i].w = BTN_W;
+    buttons[i].h = h;
+    y += h + BTN_GAP;
   }
+}
+
+void setupButtons() {
+  int i = 0;
+  buttons[i].label = "RECORD";
+  buttons[i].color = TFT_RED;
+  buttons[i].endpoint = "/record";
+  i++;
+
+  if (playStopToggle) {
+    buttons[i].label = isPlaying ? "STOP" : "PLAY";
+    buttons[i].color = isPlaying ? TFT_BLUE : TFT_GREEN;
+    buttons[i].endpoint = isPlaying ? "/stop" : "/play";
+    i++;
+  } else {
+    buttons[i].label = "PLAY";
+    buttons[i].color = TFT_GREEN;
+    buttons[i].endpoint = "/play";
+    i++;
+    buttons[i].label = "STOP";
+    buttons[i].color = TFT_BLUE;
+    buttons[i].endpoint = "/stop";
+    i++;
+  }
+
+  if (hasBeginning) {
+    buttons[i].label = "BEGINNING";
+    buttons[i].color = TFT_ORANGE;
+    buttons[i].endpoint = "/beginning";
+    i++;
+  }
+
+  numButtons = i;
+  layoutButtons(numButtons);
 }
 
 unsigned long lastTouchMs = 0;
@@ -199,7 +241,11 @@ void fetchMode() {
   int code = http.GET();
   if (code == 200) {
     String body = http.getString();
-    playStopToggle = body.indexOf("true") >= 0;
+    // Match the exact field+value, not a bare "true" - now that the
+    // response carries two booleans, a generic substring search would
+    // wrongly pick up either field's value for both flags.
+    playStopToggle = body.indexOf("\"play_stop_toggle\":true") >= 0;
+    hasBeginning = body.indexOf("\"has_beginning\":true") >= 0;
   }
   http.end();
 }

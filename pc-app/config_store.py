@@ -18,6 +18,7 @@ DEFAULT_CONFIG = {
     "key_record": ["ctrl", "r"],
     "key_play": ["space"],
     "key_stop": ["num0"],
+    "key_beginning": [],  # optional 4th button - "go to start"; empty hides it
 }
 
 

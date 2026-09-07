@@ -123,6 +123,14 @@ def route_stop():
     return "ok\n"
 
 
+@app.route("/beginning")
+def route_beginning():
+    check_auth()
+    focus_daw()
+    press_keys(config.get("key_beginning", []))
+    return "ok\n"
+
+
 @app.route("/ping")
 def route_ping():
     return "ok\n"
@@ -132,7 +140,8 @@ def route_ping():
 def route_mode():
     check_auth()
     toggle = config["key_play"] == config["key_stop"]
-    return {"play_stop_toggle": toggle}
+    has_beginning = bool(config.get("key_beginning"))
+    return {"play_stop_toggle": toggle, "has_beginning": has_beginning}
 
 
 @app.route("/", methods=["GET"])
@@ -146,6 +155,7 @@ def route_save_settings():
     config["key_record"] = [k.strip() for k in request.form.get("key_record", "").split(",") if k.strip()]
     config["key_play"] = [k.strip() for k in request.form.get("key_play", "").split(",") if k.strip()]
     config["key_stop"] = [k.strip() for k in request.form.get("key_stop", "").split(",") if k.strip()]
+    config["key_beginning"] = [k.strip() for k in request.form.get("key_beginning", "").split(",") if k.strip()]
     config_store.save_config(config)
     return render_template("settings.html", config=config, saved=True, presets=PRESETS)
 

@@ -71,11 +71,20 @@
         </div>
         <button type="button" class="test" onclick="testKey('stop')">Test</button>
       </div>
+      <div class="row">
+        <div style="flex:1">
+          <label>Beginning shortcut (optional)</label>
+          <input type="text" id="key_beginning" name="key_beginning" value="{{ config.key_beginning|join(',') }}" placeholder="e.g. w — leave blank to hide this button">
+        </div>
+        <button type="button" class="test" onclick="testKey('beginning')">Test</button>
+      </div>
       <div class="hint">
         Comma-separate combo keys (e.g. <code>ctrl,r</code> for Ctrl+R). Single keys: <code>space</code>, <code>enter</code>, <code>num0</code> (numpad 0), <code>multiply</code> (numpad *).
         Click Test with your DAW open to check a shortcut immediately.
         <br><br>
         Most DAWs use one key to both start and stop playback. If your preset shows the same shortcut for Play and Stop, that's expected — tapping it starts playback, tapping it again stops. It works fine in normal use (tap Stop right after Play), but tapping Stop when nothing is playing will start playback instead.
+        <br><br>
+        Beginning jumps back to the start of the project (like Reaper's <code>W</code>). Leave it blank if your DAW doesn't need it — the touchscreen only shows this button when a shortcut is set.
       </div>
     </div>
 
@@ -98,6 +107,7 @@
       document.getElementById('key_record').value = preset.key_record.join(',');
       document.getElementById('key_play').value = preset.key_play.join(',');
       document.getElementById('key_stop').value = preset.key_stop.join(',');
+      document.getElementById('key_beginning').value = (preset.key_beginning || []).join(',');
     }
   </script>
 </body>

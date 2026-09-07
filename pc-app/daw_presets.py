@@ -19,6 +19,9 @@ references, not general impression):
 - Fender Studio Pro ships a CUSTOMIZED keymap that differs from vanilla
   PreSonus Studio One (confirmed by hands-on hardware testing) - kept
   as a separate preset rather than assumed identical.
+- key_beginning ("go to start of project") is only filled in where
+  hands-on verified - Reaper's default is W. Left empty elsewhere
+  rather than guessed; an empty key_beginning hides the button.
 """
 
 PRESETS = {
@@ -28,6 +31,7 @@ PRESETS = {
         "key_record": ["ctrl", "r"],
         "key_play": ["space"],
         "key_stop": ["num0"],
+        "key_beginning": [],
     },
     "studio_one": {
         "label": "PreSonus Studio One",
@@ -35,6 +39,7 @@ PRESETS = {
         "key_record": ["multiply"],
         "key_play": ["enter"],
         "key_stop": ["num0"],
+        "key_beginning": [],
     },
     "ableton_live": {
         "label": "Ableton Live",
@@ -42,6 +47,7 @@ PRESETS = {
         "key_record": ["f9"],
         "key_play": ["space"],
         "key_stop": ["space"],
+        "key_beginning": [],
     },
     "pro_tools": {
         "label": "Pro Tools",
@@ -49,6 +55,7 @@ PRESETS = {
         "key_record": ["ctrl", "space"],
         "key_play": ["space"],
         "key_stop": ["space"],
+        "key_beginning": [],
     },
     "reaper": {
         "label": "Reaper",
@@ -56,6 +63,7 @@ PRESETS = {
         "key_record": ["ctrl", "r"],
         "key_play": ["space"],
         "key_stop": ["space"],
+        "key_beginning": ["w"],
     },
     "cakewalk": {
         "label": "Cakewalk by BandLab",
@@ -63,6 +71,7 @@ PRESETS = {
         "key_record": ["r"],
         "key_play": ["space"],
         "key_stop": ["space"],
+        "key_beginning": [],
     },
     "fl_studio": {
         "label": "FL Studio",
@@ -70,5 +79,6 @@ PRESETS = {
         "key_record": ["r"],
         "key_play": ["space"],
         "key_stop": ["space"],
+        "key_beginning": [],
     },
 }
