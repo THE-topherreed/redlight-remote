@@ -128,9 +128,23 @@ def run_flask():
 
 
 def make_tray_icon():
-    img = Image.new("RGB", (64, 64), "#b3271f")
+    # The brand mark - a red dot with a darker bezel ring and a small
+    # specular highlight - drawn small and crisp (no blur; it renders
+    # at 16-32px in the tray, where a soft glow just looks muddy).
+    size = 128
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    draw.ellipse((16, 16, 48, 48), fill="white")
+    cx = cy = size // 2
+    r = int(size * 0.42)
+    draw.ellipse(
+        [cx - r, cy - r, cx + r, cy + r],
+        fill=(217, 74, 63, 255),
+        outline=(122, 26, 21, 255),
+        width=max(2, int(size * 0.045)),
+    )
+    hx, hy = int(size * 0.41), int(size * 0.385)
+    hrx, hry = int(size * 0.11), int(size * 0.075)
+    draw.ellipse([hx - hrx, hy - hry, hx + hrx, hy + hry], fill=(255, 255, 255, 110))
     return img
 
 
